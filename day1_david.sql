@@ -24,6 +24,7 @@ SELECT * FROM customer WHERE first_name='BARBARA' OR first_name='JOAQUIN' OR fir
 
 -- order by/limit
 SELECT *  FROM payment WHERE (rental_id>1000 AND staff_id=1) OR amount<5.99
+ORDER BY amount DESC, staff_id ASC LIMIT 10 OFFSET 10
 ;
 
 -- functions
