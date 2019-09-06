@@ -69,3 +69,21 @@ JOIN inventory AS i
 ON (r.inventory_id=i.inventory_id)
 JOIN film AS f
 ON (i.film_id=f.film_id);
+
+-- subquery curriculum example
+SELECT first_name, last_name, birth_date
+FROM employees
+WHERE emp_no IN (
+    SELECT emp_no
+    FROM dept_manager
+)
+LIMIT 10;
+
+
+-- find the title of movies that are at our second location(optional only at second location)
+USE sakila;
+SELECT title 
+FROM film
+WHERE film_id IN (
+SELECT film_id FROM inventory WHERE store_id=2)
+-- AND film_id NOT IN(SELECT film_id FROM inventory WHERE store_id=1)
