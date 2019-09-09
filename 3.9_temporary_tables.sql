@@ -38,3 +38,54 @@ UPDATE hundreds_of_pennies
 SET hundred_pennies = amount * 100;
 
 SELECT * from hundreds_of_pennies;
+
+
+-- EXERCISE 3
+-- Find out how the average pay in each department compares to the overall average pay. 
+-- Use the Z-score for salaries. In terms of salary, what is the best department to work for? The worst?
+-- +--------------------+-----------------+
+-- | dept_name          | salary_z_score  | 
+-- +--------------------+-----------------+
+-- | Customer Service   | -0.065641701345 | 
+-- | Development        | -0.060466339473 | 
+-- | Finance            | 0.090924841177  |
+
+-- Generate a temporary table holding the current salary average and standard deviation
+CREATE TEMPORARY TABLE salary_avg_stddev AS 
+	SELECT avg(salaries.salary) AS avg, stddev(salaries.salary) AS stddev
+	FROM departments
+	JOIN dept_emp USING(dept_no)
+	JOIN salaries USING(emp_no)
+	WHERE salaries.to_date > NOW()
+	AND dept_emp.to_date > NOW()
+
+SELECT * from salary_avg_stddev;
+-- Company average salary = 72012
+-- Company standard deviation = 17310
+
+CREATE TEMPORARY TABLE dept_average_salaries AS 
+	select departments.dept_name, avg(salaries.salary) as department_average
+	from salaries
+	join dept_emp using(emp_no)
+	join departments using(dept_no)
+	where salaries.to_date > now()
+	and dept_emp.to_date > now()
+	group by departments.dept_name;
+
+
+alter table dept_average_salaries ADD average FLOAT;
+alter table dept_average_salaries ADD stddev FLOAT;
+
+UPDATE dept_average_salaries
+SET average = 72012, stddev = 17310;
+
+SELECT * from dept_average_salaries;
+
+-- add the zscore column
+alter table dept_average_salaries add zscore float;
+
+-- Populate the z-score column
+UPDATE dept_average_salaries
+SET zscore = (department_average - average) / stddev;
+
+SELECT * from dept_average_salaries;
